@@ -1,0 +1,10 @@
+sample.interval=20000
+".External2" "model.matrix.default" "model.matrix" "lm" "FUN" "lapply" "sapply" "replicate" 
+"[[.data.frame" "[[" "$.data.frame" "$" "model.weights" "as.vector" "lm" "FUN" "lapply" "sapply" "replicate" 
+"!" "[.data.frame" "[" "na.omit.data.frame" "na.omit" ".External2" "model.frame.default" "<Anonymous>" "eval" "eval" "lm" "FUN" "lapply" "sapply" "replicate" 
+"match" "%in%" "[[<-.data.frame" "[[<-" "model.matrix.default" "model.matrix" "lm" "FUN" "lapply" "sapply" "replicate" 
+"eval" "model.frame.default" "<Anonymous>" "eval" "eval" "lm" "FUN" "lapply" "sapply" "replicate" 
+"[" "unique" "model.frame.default" "<Anonymous>" "eval" "eval" "lm" "FUN" "lapply" "sapply" "replicate" 
+".External2" "model.matrix.default" "model.matrix" "lm" "FUN" "lapply" "sapply" "replicate" 
+"dim.data.frame" "dim" "dim" "ncol" "model.matrix.default" "model.matrix" "lm" "FUN" "lapply" "sapply" "replicate" 
+"unique" "model.frame.default" "<Anonymous>" "eval" "eval" "lm" "FUN" "lapply" "sapply" "replicate" 
