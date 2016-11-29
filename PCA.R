@@ -8,15 +8,13 @@ English = c(5.5, 8, 9.5, 15, 12.5, 7, 11.5, 9.5, 12)
 matrix = cbind(Maths, Phys, French, English)
 dim(matrix)
 rownames(matrix) = c('Maths', 'Physics', 'French', 'English')
-matrix
+View(matrix)
 class(matrix)
 summary(Maths)
 Msd = sd(Maths)
 
 
 # Using the sd calculated by population 1/n
-sd_pop = sqrt(8/9) * sqrt(apply(matrix, 2, var))
-
 View(matrix)
 summary(matrix)
 max(Maths)
@@ -28,6 +26,8 @@ summary = matrix(c(max(Maths), max(Phys), max(French), max(English),
 
 colnames(summary) = c('Max', 'Min', 'Mean', 'SD_sam')
 rownames(summary) = c('Maths', 'Physics', 'French', 'English')
+
+sd_pop = sqrt(8/9) * sqrt(apply(matrix, 2, var))
 
 summary = cbind(summary, sd_pop)
 summary
@@ -61,8 +61,8 @@ P1$scale  # Standard deviation(1/n)
 #### Pre-processing ####
 # Centerlize the data
 m = matrix(rep(apply(matrix, 2, mean), 9), ncol = 4, byrow = TRUE)
-mc = matrix - m
-mc
+Xc = matrix - m
+Xc
 # Other way: transpose matrix 
 t(matrix(apply(matrix, 2, mean)) %*% matrix(rep(1, 9), nrow = 1))
 
@@ -73,7 +73,7 @@ test
 
 #### Normalization ####
 norm = matrix(rep(sd_pop, 9), byrow = T, ncol = 4)
-mn = mc/norm
+Xn = Xc/norm
 P1$loadings
 P1$scores
 P1$scale
@@ -83,14 +83,57 @@ apply(mn, 2, sum)
 # Other way: Calculation by using diagonal matrix
 D = diag(1/P1$scale)
 D
-mn = mc %*% D
-mn
+Xn = Xc %*% D
+Xn
 
 # Eigenvalues
-V = 1/9 * t(mc) %*% mc
-R = 1/9 * t(mn) %*% mn
-eigen(V)
-eigen(R)
+V = 1/9 * t(Xc) %*% Xc  # 8/9 * cov(X)
+R = 1/9 * t(Xn) %*% Xn
+eigen(V)  # sqrt(eigen(V)) = P$sdev
+eigen(R)  # sqrt(eigen(R)) = P$sdev
+# Notes: Eigenvalues in decreasing order
+#        Each eigenvalue corespond with a vector in column underneath
+#        Eigenvalues in pair of orthogonals ones -> independent variables
+elva = E1$values
+P$loadings # Comp.1 - linear combinations of initial variables
+P$scores
+summary(P)  # Choosing components: look at cumulative proportion
+            # Proportion of Variance: sd^2 (or eigenvalues) / sum of eigenvalues
+plot(P)
+
+# Calculate Z1 with Comp.1 & Comp.2
+result = c()
+f = function(n) {
+    for (i in c(1:n)) {
+        result = append(result, t(matrix[i, ]) %*% P$loadings[, 1])
+        result = append(result, t(matrix[i, ]) %*% P$loadings[, 2])
+    }
+    return(result)
+}
+ex = matrix(f(9), byrow = T, ncol = 2)
+colnames(ex) = c('Comp.1', 'Comp.2')
+plot(ex, type = "p")
+
+library(ggplot2)
+ggplot()+geom_text(aes(x=ex[, 1], y=ex[, 2], label=c(1:18)))
+
+P1$loadings
+
+# Projection on Xc
+plot(P$scores[, 1],P$scores[, 2], type ="n")
+abline(v = 0, h = 0)
+text(P$scores[, 1],P$scores[, 2],labels = 1:9)
+
+# Projection on Xn
+plot(P1$scores[, 1],P1$scores[, 2], type ="n")
+abline(v = 0, h = 0)
+text(P1$scores[, 1],P1$scores[, 2],labels = 1:9)
+
+cor(Xc[,1], P$scores)
+cor(Xc[,2], P$scores)
+
+cor(Xc, P$scores[,1])
+cor(Xc, P$scores[,2])
 
 # Olympic data
 olympic = read.csv("olympic_2.txt", header = T ,sep = "\t"),
