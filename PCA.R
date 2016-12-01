@@ -50,9 +50,11 @@ P = princomp(matrix)
 P
 class(P)
 names(P)
+P$sdev
 P$loadings
 P$center  # Empirical mean
-P$scale  
+P$scale
+P$scores
 
 P1 = princomp(matrix, cor = T)  # cor = T - Consider cor matrix - normalization
 P1$center 
@@ -135,7 +137,52 @@ cor(Xc[,2], P$scores)
 cor(Xc, P$scores[,1])
 cor(Xc, P$scores[,2])
 
-# Olympic data
-olympic = read.csv("olympic_2.txt", header = T ,sep = "\t"),
-View(olympic)
+P2 = princomp(USArrests, cor = T)
+biplot(P2)
+biplot(P)
 
+# Olympic data
+olympic = read.csv("olympic_2.txt", header = T ,sep = "\t")
+View(olympic)
+m.olympic = as.matrix(olympic)
+
+# Centralized and normalized
+centralized = matrix(rep(apply(olympic, 2, mean), 34), ncol = 11, byrow = T)
+Oly_centre = olympic - centralized
+Oly_centre
+normalized = matrix(rep(33 / 34 * apply(Oly_centre, 2, sd), 34), ncol = 11, byrow = T)
+Oly_renorm = Oly_centre / normalized
+Oly_renorm = as.matrix(Oly_renorm)
+class(Oly_renorm)
+
+# Representation of the individuals 
+acp_olympic = princomp(Oly_renorm, scores = TRUE)
+acp_olympic
+correlation = (1/34) * (t(Oly_renorm) %*% Oly_renorm)
+covariance = (33/34) * cov(Oly_renorm)
+(correlation == covariance)
+summary(acp_olympic)
+acp_olympic$loadings
+acp_olympic$scores
+acp_olympic$loadings[, 1]%*%(m.olympic[1, ])
+
+# Represntations of the
+cor(Oly_renorm[,1], acp_olympic$scores)
+acp_olympic$sdv[1]*acp_olympic$loadings[,1]
+
+# Plot
+biplot(acp_olympic)
+plot(acp_olympic)
+
+# Heterogeneity in data
+I = iris
+I = I[, -5]
+PCA = princomp(I)
+PCA$loadings
+V1 = sweep(I, 2, colSums(I), FUN = "-")
+V1
+V = scale(V1, center=FALSE, scale=apply(V1, 2, sd, na.rm=TRUE))
+V = scale(I, center=T, scale=T)
+V
+eigen(3/4*cov(I))
+pairs(I)
