@@ -141,7 +141,7 @@ P2 = princomp(USArrests, cor = T)
 biplot(P2)
 biplot(P)
 
-# Olympic data
+#### Olympic data ####
 olympic = read.csv("olympic_2.txt", header = T ,sep = "\t")
 View(olympic)
 m.olympic = as.matrix(olympic)
@@ -186,3 +186,4 @@ V = scale(I, center=T, scale=T)
 V
 eigen(3/4*cov(I))
 pairs(I)
+
