@@ -1,3 +1,4 @@
+#### MDS VILLES DATA ####
 mdsville=read.table("mdsville.dat",fill=TRUE)
 View(mdsville)
 
@@ -46,43 +47,69 @@ mds = cmdscale(d, k=2)
 plot(mds, type="n", xlab="cp1", ylab="cp2")
 text(mds,villes,col=color)
 
+#### OECD DATA ####
 ocde=read.table("ocdeR.dat")
+View(ocde)
+# Center = TRUE, scale = TRUE
 ds=dist(scale(ocde))
 hc.ds <- hclust(ds,method="ward")
 plot(hc.ds)
 plot(hc.ds$height[67 :58],type="b")
-color= cutree(hc.ds,k=4)
-library(cluster)
-plot(silhouette(color,d))
-cor(cophenetic(hc.ds),ds)
-acp=princomp(ocde)
+color = cutree(hc.ds,k=4)
+color
 
-kocde=kmeans(scale(ocde),4)
+library(cluster)
+plot(silhouette(color,ds))
+cor(cophenetic(hc.ds),ds)
+
+acp=princomp(ocde, cor=TRUE)
+acp$scale
+summary(acp)
+plot(acp)
+
+apply(ocde, 2, mean)
+apply(ocde, 2, sd)
+
+kocde=kmeans(scale(ocde),3)
 color=kocde$cluster
+color
 plot(acp$scores[,1],acp$scores[,2], col=color)
+
 kocde=kmeans(ocde,4)
 color=kocde$cluster
+color
 plot(acp$scores[,1],acp$scores[,2], col=color)
 
+plot(silhouette(color,ds))
+
+install.packages("lasso2")
 library(lasso2)
+View(Prostate)
 data(Prostate)
 summary(Prostate)
 Prostate$svi=as.factor(Prostate$svi)
 Prostate$gleason=as.factor(Prostate$gleason)
 
 dim(Prostate)
+?Prostate
+dim(Prostate)
 names(Prostate)
 summary(Prostate)
+str(Prostate)
+# Subpress qualitative variables
 cor(Prostate[,-c(5,7)])
 hist(Prostate$lpsa)
 
 ind.test=4*c(1:22)
+ind.test
 Prostate.app=Prostate[-ind.test,]
 Prostate.test=Prostate[c(ind.test),]
 dim(Prostate.test)
 dim(Prostate.app)
 ntest=length(Prostate.test$lpsa)
+ntest 
 napp=length(Prostate.app$lpsa)
+napp
 summary(Prostate.app)
 summary(Prostate.test)
 
