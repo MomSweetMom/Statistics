@@ -113,6 +113,7 @@ napp
 summary(Prostate.app)
 summary(Prostate.test)
 
+# Creating own function to draw residuals
 plot.res=function(x,y,titre="")
 {
     plot(x,y,col="blue",ylab="RÈsidus",
@@ -121,6 +122,8 @@ plot.res=function(x,y,titre="")
 }
 
 modlin=lm(lpsa~., data=Prostate.app)
+summary(modlin)
+modlin=lm(lpsa~lcavol+lweight, data=Prostate.app)
 summary(modlin)
 res=residuals(modlin)
 par(mfrow=c(1,2))
@@ -146,7 +149,8 @@ modselect_b=stepAIC(modlin2,~.,trace=TRUE,direction=c("backward"))
 summary(modselect_b)
 
 mod0=lm(lpsa~1,data=Prostate.app)
-modselect_f=stepAIC(mod0,lpsa~lcavol+lweight+age+lbph+svi+lcp+gleason+pgg45,data=Prostate.app,trace=TRUE,direction=c("forward"))
+modselect_f=stepAIC(mod0,lpsa~lcavol+lweight+age+lbph+svi+lcp+gleason+pgg45,
+                    data=Prostate.app,trace=TRUE,direction=c("forward"))
 summary(modselect_f)
 
 modselect=stepAIC(modlin2,~.,trace=TRUE,direction=c("both"))
@@ -162,7 +166,7 @@ mean((predict(modselect,newdata=Prostate.test)-Prostate.test[,"lpsa"])**2)
 mean((predict(modselect_BIC,newdata=Prostate.test)-Prostate.test[,"lpsa"])**2)
 
 library(MASS)
-mod.ridge=lm.ridge(lpsa~.,data=Prostate.app,lambda=seq(0,20,0.1))
+mod.ridge=lm.ridge(lpsa~.,data=Prostate.app,lambda=seq(0,2000,0.1))
 par(mfrow=c(1,1))
 plot(mod.ridge)
 matplot(t(mod.ridge$coef),lty=1:3,type="l",col=1:10)
