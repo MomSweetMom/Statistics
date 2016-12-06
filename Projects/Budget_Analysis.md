@@ -1,4 +1,4 @@
-# STATISTICS PROJECT
+# STATISTICS  PROJECT
 
 ### *Team members: Joos.K, Jonas R., Ilhem B., Ole B., Assan S., Trung H.*
 
