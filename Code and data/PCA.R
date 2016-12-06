@@ -1,4 +1,4 @@
-#### Principels Component Analysis
+#### Principals Component Analysis
 
 # Data input
 Maths = c(6, 8, 6, 14.5, 14, 11, 5.5, 13, 9)
