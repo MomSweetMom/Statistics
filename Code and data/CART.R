@@ -51,7 +51,7 @@ r = rpart(y~., data=x)
 names(r)
 rpart(y~., data=x, control = rpart.control(minsplit = 2))
 
-# Excercises: Create a matrix X where
+##### Excercises: Create a matrix X where #####
 #   - The first column contains 1000 observation Normal(2, sqrt(0.1))
 #   - The second column is associated to Exponential(0.2)
 #   - The third one is associated to Binomial(5, 0.7)
@@ -146,7 +146,7 @@ X$V3 = V3
 Y3 = rpart(Y1~., X, control = rpart.control(minsplit = 2, cp = 10^(-15)))
 Y3
 
-# Bootstrap
+#### Bootstrap ####
 u = 1: 1000
 u1 = sample(u, 1000, replace = TRUE)
 u2 = sample(u, 1000, replace = TRUE)
@@ -190,3 +190,55 @@ sample(u, 101, replace = TRUE)
 u1 = sample(u,20,replace = TRUE)
 u1
 length(unique(u1))
+
+options(digit = 8)
+Yi = as.factor(iris[,5])
+Xi = iris[,-5]
+Ri = rpart(Yi~., Xi, control = rpart.control(minsplit = 2, cp = 10^(-15)))
+printcp(Ri)
+plotcp(Ri)
+par(mfrow = c(1,1))
+summary(Ri)
+names(Ri)
+Ri[[4]]
+Ri[[5]]
+# Note: error: learning error from training data, 
+#              normalized byRoot node error: 100/150 = 0.6666667
+#              e.g. for 2nd node (nsplit=1): 50/150 / (100/150)
+#       xerror: cross-validation error
+#       xstd: std associated to xerror
+
+#### Missing data ####
+data("airquality")
+View(airquality)
+A = airquality
+head(A)
+dim(A)
+s = sum(is.na(airquality))
+s
+a = is.na(A[,1])
+B = which(a=='TRUE')
+length(B)
+A1 = A[-B,]
+dim(A1)
+X = A1[,-1]
+Y = A1[, 1]
+Ozone = rpart(Y~., X, control = rpart.control(minsplit = 2, cp = 10^(-15)))
+plot(Ozone)
+text(Ozone)
+summary(Ozone)
+X
+which(is.na(X[,1]=='TRUE'))  # Give the number of the line
+pY = predict(Ozone)
+class(pY)
+
+Ozone = rpart(Y~., X, control = rpart.control(minsplit = 50, cp = 10^(-15)))
+plot(Ozone)
+text(Ozone)
+summary(Ozone)
+# Primary Splits: Taking best alternative
+# Surrogate splits: Dealing with NA data: Taking the best divisions
+#                   (e.g. given the missing data of Temp)
+#       - Due to adding prior data
+
+
