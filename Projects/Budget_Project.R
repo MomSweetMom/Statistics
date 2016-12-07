@@ -111,3 +111,12 @@ ggplot(data=data.frame(cormat),
 # minimal theme 
 
 #Budget
+
+#### Time Series Analysis ####
+Budget[,2]
+par(mfrow = c(3,4))
+for (i in 2:(ncol(Budget))) {
+    tb = ts(Budget[,i])
+    plot(tb)
+}
+
