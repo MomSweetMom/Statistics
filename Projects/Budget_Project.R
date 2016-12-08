@@ -121,3 +121,66 @@ for (i in 2:(ncol(Budget))) {
 }
 res = PCA(Budget, quanti.sup= c(11:12), qualif.sup = c(13))
 res
+
+
+
+
+
+
+N<-matrix(rep(apply(Budget[,-1],2,sd),24), nrow=24)
+N<- (24-1)/23*(1/N)
+M<-matrix(rep(apply(Budget[,-1],2,mean),24),nrow=24)
+Mprime<-Budget[,-1]-M
+
+M_n<-Mprime*N
+my_H_clust<-hclust(dist(M_n),method ="ward.D2")
+plot(my_H_clust)
+plot(my_H_clust$height)
+lines(my_H_clust$height, col='green')
+
+
+lo <-smooth.spline(my_H_clust$height, spar=0.5)
+le<-smooth.spline(my_H_clust$height, spar=0.5)
+plot(my_H_clust$height)
+lines(predict(lo, deriv=1), col='red')
+lines(predict(le), col='blue')
+
+
+X11()
+x<-c(1,20)
+y<-c(13,9)
+#plot(x,y)
+#lines(x,y, col=2)
+
+my_h <-rev(my_H_clust$height)
+my_h<-round(my_h,2)
+plot(my_h, type='n')
+#text(my_h,labels= my_h)
+lines(my_h, col='green')
+lines(x=c(48.11,36.24,24,12,0),col='red')
+text(my_h,labels=my_h,cex=0.5)
+
+lines(x,y, col=2)
+
+library(factominR)
+
+
+
+Lambda_r<-(P$sdev)^2/sum((P$sdev)^2)
+
+plot(Lambda_r, col='green')
+lines(Lambda_r, col='pink')
+Lambda_r<-cumsum(Lambda_r)
+plot(Lambda_r)
+lines(Lambda_r,col='pink')
+abline(h = 0.9,col='black')
+abline(h = 0.8,col='red')
+
+message("3 values have been replaced")
+
+
+
+
+
+
+
