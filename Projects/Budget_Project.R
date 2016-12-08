@@ -1,6 +1,9 @@
 #### Packages ####
+install.packages("reshap2")
 library(reshape2)
-library(magrittr)
+install.packages("magrittr")
+library(magrittr)  # Package for pipeline %>%
+install.packages("ggplot2")
 library(ggplot2)
 install.packages("devtools")
 install.packages("Rcpp")
@@ -14,11 +17,12 @@ library(dplyr)
 library(tidyr)
 
 #### Load the data set ####
-Budget <- read.csv("~/Downloads/Budget.txt", header=FALSE, stringsAsFactors=FALSE)
+Budget <- read.csv("Budget.txt", header=FALSE, stringsAsFactors=FALSE)
 View(Budget)
 par(family ="sans-serif")
 dim(Budget)
-colnames(Budget) = c("AN", "PVP", "AGR", "CMI", "TRA", "LOG", "EDU", "ACS", "ANC", "DEF", "DET", "DIV")
+colnames(Budget) = c("AN", "PVP", "AGR", "CMI", "TRA", "LOG", 
+                     "EDU", "ACS", "ANC", "DEF", "DET", "DIV")
 # rownames(Budget) = Budget$AN
 
 
@@ -60,7 +64,7 @@ View(long_data)
 n <- nPlot(Allocation ~ AN, data = long_data, 
            group = "Type", type = "lineChart")
 n$chart(yDomain = sort(range(long_data$Allocation), 
-                       decreasing = T) )
+                       decreasing = F) )
 n$chart(interpolate = "step-after")
 n$xAxis(axisLabel = "Year")
 n$yAxis(axisLabel = "Allocation")
@@ -184,3 +188,12 @@ message("3 values have been replaced")
 
 
 
+# Note: Upward trend in EDU (Education)  & ACS (Social Action) overtime
+
+#### K-Means ####
+km=kmeans(Budget[,-1],3,nstart=50)
+Budget[,-1]
+km$cluster
+plot(Budget[,-1], col=(km$cluster+1), 
+     main="K-Means Clustering Results with K=3", 
+     pch=20, cex=2)
