@@ -204,7 +204,8 @@ summary(res)
 
 budget = PCA(Budget[,-1])
 summary(budget)
-
+screeplot(budget2,type='lines',col=3)
+summary(PCA)
 budget2 = princomp(Budget[,-1], cor = TRUE)
 biplot(budget2)
 # PCA with supplementary variables
@@ -223,10 +224,14 @@ plot(res, cex=0.8, habillage="competition")
 plotellipses(res)
 
 # Graph for dimensions 3 and 4
-plot( res, choix = 'ind', cex=0.8, habillage=11,
+plot( res, choix = 'ind', cex=0.8,
       title = 'Individual PCA graph', axes=3:4)
 plot(res, choix='var', title='variables PCA graph', axes=3:4)
-
+plot(res, choix='var', title='variables PCA graph', axes=c(2,3))
+plot(budget, choix='var', title='var PCA graph', axes=c(1:2))
+plot(budget, choix='ind', title='ind PCA graph', axes=c(1:2))
+X11()
+plot(budget, choix='ind', title='ind PCA graph', axes=c(1,3))
 # Selecting individuals
 plot(res, cex=0.8, invisible="quali", select='cos2 0.7')
 plot(res, cex=0.8, invisible="quali", select='contrib 5')

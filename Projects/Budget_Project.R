@@ -123,32 +123,41 @@ for (i in 2:(ncol(Budget))) {
     tb = ts(Budget[,i])
     plot(tb)
 }
-res = PCA(Budget, quanti.sup= c(11:12), qualif.sup = c(13))
-res
+# Note: Upward trend in EDU (Education)  & ACS (Social Action) overtime
 
-
-
-
-
-
+# Create a matrix with sd of each variables
 N<-matrix(rep(apply(Budget[,-1],2,sd),24), nrow=24)
+head(N)
+
+# Adjusted for sd with 1/n
 N<- (24-1)/23*(1/N)
+
+# Create a matrix with mean of each variables
 M<-matrix(rep(apply(Budget[,-1],2,mean),24),nrow=24)
+
+# Centered data
 Mprime<-Budget[,-1]-M
 
+# Normalized
 M_n<-Mprime*N
-my_H_clust<-hclust(dist(M_n),method ="ward.D2")
+
+# Hierarchical ascending clustering 
+my_H_clust<-hclust(dist(M_n), method ="ward.D2")
+my_H_clust1 = hclust(dist(M_n), method='complete')
+
+# Plot data
+par(mfrow=c(1,1))
 plot(my_H_clust)
-plot(my_H_clust$height)
-lines(my_H_clust$height, col='green')
+plot(my_H_clust1)
 
+# plot(my_H_clust$height)
+# lines(my_H_clust$height, col='green')
 
-lo <-smooth.spline(my_H_clust$height, spar=0.5)
-le<-smooth.spline(my_H_clust$height, spar=0.5)
-plot(my_H_clust$height)
-lines(predict(lo, deriv=1), col='red')
-lines(predict(le), col='blue')
-
+# lo <-smooth.spline(my_H_clust$height, spar=0.5)
+# le<-smooth.spline(my_H_clust$height, spar=0.5)
+# plot(my_H_clust$height)
+# lines(predict(lo, deriv=1), col='red')
+# lines(predict(le), col='blue')
 
 X11()
 x<-c(1,20)
@@ -167,11 +176,8 @@ text(my_h,labels=my_h,cex=0.5)
 lines(x,y, col=2)
 
 library(factominR)
-
-
-
+P = princomp(Budget[,-1], cor=T)
 Lambda_r<-(P$sdev)^2/sum((P$sdev)^2)
-
 plot(Lambda_r, col='green')
 lines(Lambda_r, col='pink')
 Lambda_r<-cumsum(Lambda_r)
@@ -182,18 +188,12 @@ abline(h = 0.8,col='red')
 
 message("3 values have been replaced")
 
-
-
-
-
-
-
-# Note: Upward trend in EDU (Education)  & ACS (Social Action) overtime
-
 #### K-Means ####
 km=kmeans(Budget[,-1],3,nstart=50)
 Budget[,-1]
-km$cluster
+class(km$cluster)
+plot(Budget[,1],km$cluster)
+names(km)
 plot(Budget[,-1], col=(km$cluster+1), 
      main="K-Means Clustering Results with K=3", 
      pch=20, cex=2)
