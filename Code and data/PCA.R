@@ -187,3 +187,54 @@ V
 eigen(3/4*cov(I))
 pairs(I)
 
+install.packages('FactoMineR')
+library(FactoMineR)
+View(olympic)
+dim(olympic)
+?PCA
+Budget <- read.csv("Budget.txt", header=FALSE, stringsAsFactors=FALSE)
+View(Budget)
+dim(Budget)
+rownames(Budget) = Budget[,1]
+colnames(Budget) = c("AN", "PVP", "AGR", "CMI", "TRA", "LOG", 
+                     "EDU", "ACS", "ANC", "DEF", "DET", "DIV")
+# PCA With only active elements as active
+res = PCA(olympic[,1:10])
+summary(res)
+
+budget = PCA(Budget[,-1])
+summary(budget)
+
+budget2 = princomp(Budget[,-1], cor = TRUE)
+biplot(budget2)
+# PCA with supplementary variables
+res = PCA(olympic, quanti.sup=11) # quanli.sup
+summary(res,nbelements=Inf)
+
+# Description of the dimentions
+dimdesc(res)
+dimdesc(res, proba=0.2)
+
+# Drawing individuals according to the competition
+plot(res, cex=0.8, invisible="quali", title="individuals PCA Graph")
+plot(res, cex=0.8, habillage="competition")
+
+# Confidence ellipses around the categories
+plotellipses(res)
+
+# Graph for dimensions 3 and 4
+plot( res, choix = 'ind', cex=0.8, habillage=11,
+      title = 'Individual PCA graph', axes=3:4)
+plot(res, choix='var', title='variables PCA graph', axes=3:4)
+
+# Selecting individuals
+plot(res, cex=0.8, invisible="quali", select='cos2 0.7')
+plot(res, cex=0.8, invisible="quali", select='contrib 5')
+plot(res, cex=0.8, invisible="quali", select=c('Clay','Karpov '))
+
+# Selecting  variables
+plot(res, choix='var', select='contrib 5')
+
+# Graph using several arguments
+plot(res, cex=0.8, habillage = 11, select='cos2 0.7', title="Decathlon",
+     cex.main=1.1, cex.axis=0.9, shadown=TRUE, auto='y')
