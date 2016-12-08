@@ -119,4 +119,5 @@ for (i in 2:(ncol(Budget))) {
     tb = ts(Budget[,i])
     plot(tb)
 }
-
+res = PCA(Budget, quanti.sup= c(11:12), qualif.sup = c(13))
+res
