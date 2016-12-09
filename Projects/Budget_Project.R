@@ -1,5 +1,5 @@
 #### Packages ####
-install.packages("reshap2")
+install.packages("reshape2") #JR:didnt work as reshap2 on my newest R version
 library(reshape2)
 install.packages("magrittr")
 library(magrittr)  # Package for pipeline %>%
@@ -72,9 +72,9 @@ n$chart(margin = list(left = 75))
 n
 
 # Histogram graphic of each variable
-par(mfrow=c(3,4))
+par(mfrow=c(3,4),family ='sans') #JR:family ='sans' makes Additional infos viewable
 for (i in 2:length(names(Budget))){
-  hist(scale(Budget)[,i],main=names(Budget)[i])
+  hist(scale(Budget)[,i], main=colnames(Budget)[i])
   lines(density(Budget[,i]), col="red")
   lines(density(Budget[,i], adjust = .5),col="blue") # ‘half the default’ bandwidth
   lines(density(Budget[,i], adjust = 2),col="green")
@@ -110,7 +110,7 @@ ggplot(data=data.frame(cormat),
                             midpoint = 0, 
                             limit = c(-1,1), 
                             space = "Lab",
-                            name="Pearson\nCorrelation")
+                            name="Pearson\nCorrelation") #JR:X1 and X2 cannot be found in my console.
 
 # minimal theme 
 
@@ -121,9 +121,9 @@ Budget[,2]
 par(mfrow = c(3,4))
 for (i in 2:(ncol(Budget))) {
     tb = ts(Budget[,i])
-    plot(tb)
+    plot(tb, xlab="Year", ylab="% Budget France", main =colnames(Budget)[i], ylim=c(0,45))
 }
-res = PCA(Budget, quanti.sup= c(11:12), qualif.sup = c(13))
+res = PCA(Budget, quanti.sup= c(11:12), qualif.sup = c(13)) #JR:couldnt find PCA function - maybe package above missing?
 res
 
 
@@ -146,7 +146,7 @@ lines(my_H_clust$height, col='green')
 lo <-smooth.spline(my_H_clust$height, spar=0.5)
 le<-smooth.spline(my_H_clust$height, spar=0.5)
 plot(my_H_clust$height)
-lines(predict(lo, deriv=1), col='red')
+lines(predict(lo, deriv=1), col='red',lwd=2)
 lines(predict(le), col='blue')
 
 
@@ -196,4 +196,4 @@ Budget[,-1]
 km$cluster
 plot(Budget[,-1], col=(km$cluster+1), 
      main="K-Means Clustering Results with K=3", 
-     pch=20, cex=2)
+     pch=10, cex=1)#JR:better for display
