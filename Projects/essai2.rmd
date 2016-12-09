@@ -12,7 +12,7 @@ In this document we follow 4 steps :
 5. Conlusion
 
 
-```{r echo=FALSE}
+```{r}
 library(reshape2)
 library(magrittr)  # Package for pipeline %>%
 library(ggplot2)
@@ -61,7 +61,7 @@ summary(lm(AN~.,Budget))
 
 #Budget 
 
-```{r echo=FALSE}
+```{r}
 View(Budget)
 long_data <- Budget %>% gather(Type, Allocation, -AN)
 View(long_data)
