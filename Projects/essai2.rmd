@@ -1,0 +1,177 @@
+---
+title: "Analysis of Budget dataset"
+output: pdf_document
+---
+
+In this document we follow 4 steps :
+
+1. univariate analysis
+2. correlations
+3. PCA
+4. Clustering
+5. Conlusion
+
+
+```{r echo=FALSE}
+library(reshape2)
+library(magrittr)  # Package for pipeline %>%
+library(ggplot2)
+library(devtools)
+library(Rcpp)
+#library(rCharts)
+library(dplyr)
+library(tidyr)
+
+family="sans-serif"
+
+#### Load the data set ####
+Budget <- read.csv("Budget.txt", header=FALSE, stringsAsFactors=FALSE)
+View(Budget)
+par(family ="sans-serif")
+dim(Budget)
+colnames(Budget) = c("AN", "PVP", "AGR", "CMI", "TRA", "LOG", 
+                     "EDU", "ACS", "ANC", "DEF", "DET", "DIV")
+#rownames(Budget) = Budget$AN
+
+
+# Examine the structure of the data set.
+str(Budget)
+dim(Budget)
+#rownames(Budget) = Budget$AN
+row.names(Budget)
+Budget[,-1]
+
+# Remove missing observations if any
+Budget = na.omit(Budget)
+
+# Check the variables names
+names(Budget)
+par(mfrow=c(1,1))
+boxplot(Budget[,-1])
+# Attach the observations Frame
+attach(Budget)
+```
+
+#Budget evolution with time:
+
+```{r}
+summary(Budget)
+summary(lm(AN~.,Budget))
+```
+
+#Budget 
+
+```{r echo=FALSE}
+View(Budget)
+long_data <- Budget %>% gather(Type, Allocation, -AN)
+View(long_data)
+n <- nPlot(Allocation ~ AN, data = long_data, 
+           group = "Type", type = "lineChart")
+n$chart(yDomain = sort(range(long_data$Allocation), 
+                       decreasing = F) )
+n$chart(interpolate = "step-after")
+n$xAxis(axisLabel = "Year")
+n$yAxis(axisLabel = "Allocation")
+n$chart(margin = list(left = 75))
+n
+```
+
+
+```{r}
+par(mfrow=c(3,4),family ='sans')
+for (i in 2:length(names(Budget))){
+  hist((Budget)[,i],main=names(Budget)[i],prob=TRUE,xlab='% of the total Budget')
+  lines(density(Budget[,i]), col="red")
+}
+```
+
+
+
+```{r}
+c_d<-names(Budget)
+for (i in 2:length(names(Budget))){
+  qqnorm((Budget)[,i], main=paste(c_d[i],'\n', 'vs','\n', 'Normal dist.'), ylab = c_d[i])
+  qqline((Budget)[,i], col= "green")
+}
+```
+
+```{r}
+cormat<-round(cor(Budget),2)
+cormat<-melt(cormat)
+
+ggplot(data=data.frame(cormat),
+       aes(fill=value,x=X1, y=X2)) +
+       geom_tile(color="white") +
+       scale_fill_gradient2(low = "blue", 
+                            high = "blue", 
+                            mid = "orange", 
+                            midpoint = 0, 
+                            limit = c(-1,1), 
+                            space = "Lab",
+                            name="Pearson\nCorrelation")
+```
+
+
+```{r}
+
+# Create a matrix with sd of each variables
+N<-matrix(rep(apply(Budget[,-1],2,sd),24), nrow=24)
+head(N)
+
+# Adjusted for sd with 1/n
+N<- (24-1)/23*(1/N)
+
+# Create a matrix with mean of each variables
+M<-matrix(rep(apply(Budget[,-1],2,mean),24),nrow=24)
+
+# Centered data
+Mprime<-Budget[,-1]-M
+
+# Normalized
+M_n<-Mprime*N
+
+# Hierarchical ascending clustering 
+my_H_clust<-hclust(dist(M_n), method ="ward.D2")
+my_H_clust1 = hclust(dist(M_n), method='complete')
+```
+
+```{r}
+# Plot data
+par(mfrow=c(1,1))
+plot(my_H_clust)
+plot(my_H_clust1)
+```
+
+
+```{r}
+library(factominR)
+P = princomp(Budget[,-1], cor=T)
+Lambda_r<-(P$sdev)^2/sum((P$sdev)^2)
+plot(Lambda_r, col='green')
+lines(Lambda_r, col='pink')
+Lambda_r<-cumsum(Lambda_r)
+plot(Lambda_r)
+lines(Lambda_r,col='pink')
+abline(h = 0.9,col='black')
+abline(h = 0.8,col='red')
+```
+
+
+#### K-Means ####
+```{r}
+km=kmeans(Budget[,-1],3,nstart=50)
+Budget[,-1]
+class(km$cluster)
+plot(Budget[,1],km$cluster)
+names(km)
+```
+
+```{r}
+plot(Budget[,-1], col=(km$cluster+1), 
+     main="K-Means Clustering Results with K=3", 
+     pch=20, cex=2)
+```
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
