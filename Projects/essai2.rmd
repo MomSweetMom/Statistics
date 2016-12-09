@@ -12,7 +12,7 @@ In this document we follow 4 steps :
 5. Conlusion
 
 
-```{r}
+```{r eval=TRUE}
 library(reshape2)
 library(magrittr)  # Package for pipeline %>%
 library(ggplot2)
@@ -58,6 +58,7 @@ attach(Budget)
 summary(Budget)
 summary(lm(AN~.,Budget))
 ```
+
 
 #Budget 
 
