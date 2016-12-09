@@ -19,7 +19,8 @@ library(tidyr)
 #### Load the data set ####
 Budget <- read.csv("Budget.txt", header=FALSE, stringsAsFactors=FALSE)
 View(Budget)
-par(family ="sans-serif")
+par(family = "sans-serif")
+par(family = 'sans')
 dim(Budget)
 colnames(Budget) = c("AN", "PVP", "AGR", "CMI", "TRA", "LOG", 
                      "EDU", "ACS", "ANC", "DEF", "DET", "DIV")
@@ -48,9 +49,8 @@ attach(Budget)
 #### Univariate Analysis ####
 #===========================#
 # Here we consider each variable separately.
-
 summary(Budget)
-summary(lm(AN~.,Budget))
+
 # ------ Combine multiple plots into one overall graph -----------
 #     Data overview    
 #     Show the distribution as a boxplot 
@@ -197,3 +197,56 @@ names(km)
 plot(Budget[,-1], col=(km$cluster+1), 
      main="K-Means Clustering Results with K=3", 
      pch=20, cex=2)
+
+#### PCA Analysis ####
+install.packages('FactoMineR')
+library(FactoMineR)
+?PCA
+head(Budget)
+dim(Budget)
+rownames(Budget) = Budget[,1]
+colnames(Budget) = c("AN", "PVP", "AGR", "CMI", "TRA", "LOG", 
+                     "EDU", "ACS", "ANC", "DEF", "DET", "DIV")
+# PCA With only active elements as active
+budget = PCA(Budget[,-1])
+summary(budget)
+screeplot(budget2,type='lines',col=3)
+summary(PCA)
+budget2 = princomp(Budget[,-1], cor = TRUE)
+biplot(budget2)
+# PCA with supplementary variables
+res = PCA(Budget, quanti.sup=1) # quanli.sup
+summary(res,nbelements=Inf)
+
+# Description of the dimentions
+dimdesc(res)
+dimdesc(res, proba=0.2)
+
+# Drawing individuals according to the competition
+plot(res, cex=0.8, invisible="quanti.sup", title="individuals PCA Graph")
+# plot(res, cex=0.8, habillage="AN")
+
+# Confidence ellipses around the categories
+plotellipses(res)
+
+# Graph for dimensions 3 and 4
+plot( res, choix = 'ind', cex=0.8,
+      title = 'Individual PCA graph', axes=3:4)
+plot(res, choix='var', title='variables PCA graph', axes=3:4)
+plot(res, choix='var', title='variables PCA graph', axes=c(2,3))
+plot(budget, choix='var', title='var PCA graph', axes=c(1:2))
+plot(budget, choix='ind', title='ind PCA graph', axes=c(1:2))
+X11()
+plot(budget, choix='ind', title='ind PCA graph', axes=c(1,3))
+
+# Selecting individuals
+plot(res, cex=0.8, invisible="quali", select='cos2 0.7')
+plot(res, cex=0.8, invisible="quali", select='contrib 5')
+plot(res, cex=0.8, invisible="quali", select=c('Clay','Karpov '))
+
+# Selecting  variables
+plot(res, choix='var', select='contrib 5')
+
+# Graph using several arguments
+plot(res, cex=0.8, select='cos2 0.7',
+     cex.main=1.1, cex.axis=0.9, shadown=TRUE, auto='y')

@@ -1,6 +1,6 @@
 ---
 title: "Analysis of Budget dataset"
-output: pdf_document
+output: html_document
 ---
 
 In this document we follow 4 steps :
@@ -12,7 +12,7 @@ In this document we follow 4 steps :
 5. Conlusion
 
 
-```{r echo=TRUE eval=TRUE}
+```{r}
 library(reshape2)
 library(magrittr)  # Package for pipeline %>%
 library(ggplot2)
@@ -173,6 +173,11 @@ plot(Budget[,-1], col=(km$cluster+1),
      pch=20, cex=2)
 ```
 
+```{r}
+library(rmarkdown)
+render("essai2.rmd", html_document(toc = TRUE))
+
+```
 
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
