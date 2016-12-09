@@ -1,4 +1,4 @@
-#### Packages ####
+##### Packages ####
 install.packages("reshap2")
 library(reshape2)
 install.packages("magrittr")
@@ -112,7 +112,7 @@ ggplot(data=data.frame(cormat),
                             space = "Lab",
                             name="Pearson\nCorrelation")
 
-# minimal theme 
+ 
 
 #Budget
 
