@@ -119,10 +119,10 @@ ggplot(data=data.frame(cormat),
 
 #### Time Series Analysis ####
 Budget[,2]
-par(mfrow = c(3,4))
+par(mfrow = c(4,3))
 for (i in 2:(ncol(Budget))) {
-    tb = ts(Budget[,i])
-    plot(tb)
+    tb = ts(Budget[,i],  start=c(1872,1))
+    plot.ts(tb, main=names(Budget)[i])
 }
 # Note: Upward trend in EDU (Education)  & ACS (Social Action) overtime
 
