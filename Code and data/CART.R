@@ -187,7 +187,7 @@ u = 1:100
 sample(u, 50)
 sample(u, 101)
 sample(u, 101, replace = TRUE)
-u1 = sample(u,20,replace = TRUE)
+u1 = sample(u, 20, replace = TRUE)
 u1
 length(unique(u1))
 
@@ -195,6 +195,8 @@ options(digit = 8)
 Yi = as.factor(iris[,5])
 Xi = iris[,-5]
 Ri = rpart(Yi~., Xi, control = rpart.control(minsplit = 2, cp = 10^(-15)))
+names(Ri)
+Ri$cptable
 printcp(Ri)
 plotcp(Ri)
 par(mfrow = c(1,1))
@@ -208,6 +210,7 @@ Ri[[5]]
 #       xerror: cross-validation error
 #       xstd: std associated to xerror
 
+help.start()
 #### Missing data ####
 data("airquality")
 View(airquality)
@@ -228,7 +231,7 @@ plot(Ozone)
 text(Ozone)
 summary(Ozone)
 X
-which(is.na(X[,1]=='TRUE'))  # Give the number of the line
+which(is.na(X[,1]=='TRUE'))  # Give the number of the N.A. line 
 pY = predict(Ozone)
 class(pY)
 
@@ -241,4 +244,74 @@ summary(Ozone)
 #                   (e.g. given the missing data of Temp)
 #       - Due to adding prior data
 
+#### Bagging #### 
+bag <- function(X, Y, K, Xp) {
+    # Construction of K bootstrap samples
+    n = nrow(X)
+    sP = data.frame(rep(0, nrow(X)))
+    for (i in 1:K) {
+        u = 1:n
+        v = sample(u, n, replace = TRUE)
+        Xb = X[v, ]
+        Yb = Y[v]
+        # Xb and Yb are the new data
+        
+        # Determine the maximal tree
+        T = rpart(Yb ~., Xb, control = rpart.control(minsplit = 2, cp = 10^(-15)))
+    
+        # Selection 
+        Tcp = T$cptable
+        cverror = Tcp[, 4]  # Cross-validation error
+        mcv = min(cverror)
+        loc = which(cverror==mcv)
+        thres = min(Tcp[loc, 4] + Tcp[loc, 5])  # Set threshold
+        xcv = 1*(cverror<=thres)  # Find all the xerror < threshold
+        xb = min(which(xcv == 1))  # Index of the smallest xerror
+        cpb = Tcp[xb, 1]  # cp of the smallest xerror
+        Tf = prune(T, cp=cpb)  # Cut tree at that point
+        plot(Tf)
+    
+        # Make the distinguishment between classification and regression
+        if  (is.factor(Y)) {
+            # Classification 
+            P = predict(Tf, Xp, type = 'class')  # Make prediction on new data
+            sP = cbind(sP, P)
+        } else {
+            # Regression
+            P = predict(Tf, Xp)
+            sP = cbind(sP, P)
+        }
+        
+        P = sP[, -1]  # Suppress the first column of initiation = 0 
+        
+        # Aggregation
+        if (is.factor(Y)) {
+            # Classification
+            lev = levels(Y)
+            nlev = length(lev)
+            predict = c()
+            a = c()
+            for (i in 1:nrow(Xp)) {
+                for (j in 1:nlev) {
+                    a = c(a, length(which(X[i,] == lev[j])))
+                }
+                b = which(a==max(a)) - 1  # index of maximum
+                predict = c(predict, lev[b])
+            }
+            
+        } else {
+            # Regression
+            apply(P, 1, mean)
+        }
+    }
+    bag = predict
+}
 
+data(mtcars)
+Y = mtcars[,1]
+X = mtcars[,-1]
+K = 2  # K small -> Large Variance among difference test set 
+K = 500
+A = bag(X, Y, K, X[1:2,])
+A = bag(X, Y, K, X)
+    

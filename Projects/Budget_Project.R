@@ -30,6 +30,7 @@ colnames(Budget) = c("AN", "PVP", "AGR", "CMI", "TRA", "LOG",
 # Examine the structure of the data set.
 str(Budget)
 dim(Budget)
+head(Budget[,-1])
 rownames(Budget) = Budget$AN
 row.names(Budget)
 Budget[,-1]
