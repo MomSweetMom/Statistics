@@ -10,7 +10,7 @@ output:
     # number_sections: true
 ---
 
-### 1. Data science cycle control cycle
+## Data science cycle control cycle
 > 1.	ASK : What the problem(s) we need to solve ?
 > 2.	RESEARCH : What data do we need and how do we get it ?
 > 3.	MODEL : Which method(s) is appropriate to use ?
@@ -46,8 +46,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 In this document we follow 4 steps :
 
-### 2. Descriptive Analysis 
-### 2.1 Importing necessary packages
+## Descriptive Analysis 
+### 1. Importing necessary packages
 
 ```{r warning = FALSE}
 require(c('magrittr','reshaped2', 'ggplot2', 'devtools', 
@@ -63,7 +63,7 @@ library(FactoMineR)
 # family="sans-serif"
 ```
 
-### 2.2 Data structure
+### 2. Data structure
 Examine the contents of the CSV file.
 
 ```{r warning = FALSE}
@@ -92,7 +92,7 @@ The first line is a list of variable names (11, AN is for individual names).
 What is the format of the following lines? What do they represent?
 The other lines are the observations (1872 : 1971); each observation is a list of percentage of the budget allocated to each service.
 
-### 2.3 Summary
+### 3. Summary
 ```{r}
 str(Budget)
 summary(Budget)
@@ -100,7 +100,7 @@ summary(Budget)
 
 The difference between the mean and median (eg. CMI, LOG) indicates that there are a few cases/rows with extreme values that are elevating the mean
 
-### 2.4 Box Plot
+### 4. Box Plot
 Distribution, location and spread of the represented data.
 ```{r}
 boxplot(Budget[,-1], ylab = 'Percentage of France Budget', xlab = 'Budget Category')
@@ -110,7 +110,7 @@ In the above plot, the share of all spending categories is mostly well bellow 20
 The box is much higher for DEF and DET than for the others. This means that DEF and DET have larger variability than the others.
 The three largest observations in education (EDU) are shown as boxplot outliers, i.e. they are more than 1.5 times the inter-quartile range (hight of the box) larger than the 3rd quartile.
 
-### 2.5 Histograms
+### 5. Histograms
 Here we consider each variable separately. We consider the histograms as a probability density rather than a frequency. We fit empirical kernel density estimator curves, which give a more-or less smoothed continuous approximation to the histogram.
 What evidence does the summary give that the distribution is somewhat symmetric?
 We can observe the following:
@@ -119,6 +119,7 @@ We can observe the following:
     + Skewed left : AGR, TRA, LOG, EDU, ANC, CMI
     + Symetric : PVP, DEF 
 * Bimodal : DET, DIV
+
 ```{r}
 par(mfrow=c(3,4),family ='sans')
 for (i in 2:length(names(Budget))){
@@ -127,7 +128,7 @@ for (i in 2:length(names(Budget))){
 }
 ```
 
-### 2.6 Q-Q Plot
+### 6. Q-Q Plot
 ```{r}
 c_d<-names(Budget)
 par(mfrow=c(3,4),family ='sans')
@@ -137,7 +138,7 @@ for (i in 2:length(names(Budget))){
 }
 ```
 
-#### 2.6 Heat Map
+#### 7. Heat Map
 
 A heat map is like a table that uses colors instead of numbers to represent the values for the cells, using Pearson Correlation
 
@@ -152,7 +153,7 @@ qplot(x=Var1, y=Var2, data=melt(cor(Budget[,-1], method = 'pearson')), fill=-val
 
 From the heatmap table, the correlation between variables is noticeable for ACS (Social action) & AGR (Agriculture), and ACS & EDU (Education)
 
-### 2.7 Evolution overtime
+### 8. Evolution overtime
 ```{r}
 par(mfrow = c(3,4))
 for (i in 2:(ncol(Budget))) {
@@ -164,10 +165,9 @@ for (i in 2:(ncol(Budget))) {
 With only simple chart in time series, we can see the upward trend for
 Education (EDU) and Social Action (ACS) spending (as percentage of budget) over time, even during the economics slow down 1929 - 1932 and the 2 world wars
 
-### 3. Inference statistics
+## Modeling
 
-### 4. Modeling 
-### 4.1 PCA
+### 1. PCA
 A principal component analysis of the data can be applied using the *ACP* function of the *FactoMineR library* (omitting the AN variable).
 
 **Step 1**: We examine the eigenvalues to determine how many principal components should be considered:
@@ -238,10 +238,11 @@ plot(budget, choix='ind', title='PCA graph: Individuals', axes=c(1:2))
 *Is 3rd component useful or not?* It seems not very useful as we look at the following plot
 
 ```{r}
-plot(budget, choix='ind', title='PCA graph: Individuals', axes=c(1,2))
+plot(PCA(Budget[,-1], ncp = 3, graph = FALSE), choix='ind', 
+     title='PCA graph: Individuals', axes=c(1,3))
 ```
     
-### 4.2 Clustering
+### 2. Clustering
 ```{r}
 km5=kmeans(Budget[,-1],4,nstart=50)
 km4=kmeans(Budget[,-1],4,nstart=50)
@@ -255,8 +256,9 @@ plot(Budget[,1], km4$cluster, xlab = 'Year', ylab = '4 Clusters')
 plot(Budget[,1], km5$cluster, xlab = 'Year', ylab = '5 Clusters')
 ```
 
-From the plots, we can see K-means (with number of clusters K = 3) produced the same group of years as PCA (with the ,   
-### 4.3 Hierachiacal Clustering
+From the plots, we can see K-means (with number of clusters K = 3) produced the same group of years as PCA (with the first component)
+
+### 3. Hierachiacal Clustering
 ```{r}
 
 # Create a matrix with sd of each variables
