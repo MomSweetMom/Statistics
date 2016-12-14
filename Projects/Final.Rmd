@@ -1,6 +1,6 @@
 ---
 title: "Budget Project"
-author: "Joos.K, Jonas R., Ilhem B., Ole B., Assan S., Trung H."
+author: "Joos.K, Jonas R., Ilhem B., Ole B., Assan S., Trung H., Kennedy"
 date: "Dec 14, 2016"
 
 output: 
@@ -238,7 +238,7 @@ plot(budget, choix='ind', title='PCA graph: Individuals', axes=c(1:2))
 *Is 3rd component useful or not?* It seems not very useful as we look at the following plot
 
 ```{r}
-plot(budget, choix='ind', title='PCA graph: Individuals', axes=c(1,3))
+plot(budget, choix='ind', title='PCA graph: Individuals', axes=c(1,2))
 ```
     
 ### 4.2 Clustering
@@ -255,6 +255,7 @@ plot(Budget[,1], km4$cluster, xlab = 'Year', ylab = '4 Clusters')
 plot(Budget[,1], km5$cluster, xlab = 'Year', ylab = '5 Clusters')
 ```
 
+From the plots, we can see K-means (with number of clusters K = 3) produced the same group of years as PCA (with the ,   
 ### 4.3 Hierachiacal Clustering
 ```{r}
 
