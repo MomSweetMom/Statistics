@@ -1,7 +1,7 @@
 ---
 title: "Budget Project"
 author: "Joos.K, Jonas R., Ilhem B., Ole B., Assan S., Trung H."
-date: "Dec 12, 2016"
+date: "Dec 14, 2016"
 
 output: 
   html_document:
@@ -79,7 +79,8 @@ The first line is a list of variable names (11, AN is for individual names).
 * AN : year
 * PVP : authorities
 * AGR : agriculture
-* CMI : trades and companies • TRA : work
+* CMI : trades and companies 
+* TRA : work
 * LOG : accommodations
 * EDU : education
 * ACS : social action
@@ -137,7 +138,9 @@ for (i in 2:length(names(Budget))){
 ```
 
 #### 2.6 Heat Map
+
 A heat map is like a table that uses colors instead of numbers to represent the values for the cells, using Pearson Correlation
+
 ```{r}
 data(attitude)
 head(attitude)
@@ -146,6 +149,7 @@ library(ggplot2)
 library(reshape2)
 qplot(x=Var1, y=Var2, data=melt(cor(Budget[,-1], method = 'pearson')), fill=-value, geom="tile")
 ```
+
 From the heatmap table, the correlation between variables is noticeable for ACS (Social action) & AGR (Agriculture), and ACS & EDU (Education)
 
 ### 2.7 Evolution overtime
