@@ -1,0 +1,264 @@
+---
+title: "Budget Project"
+author: "Joos.K, Jonas R., Ilhem B., Ole B., Assan S., Trung H."
+date: "Dec 12, 2016"
+
+output: 
+  html_document:
+    theme: spacelab
+    toc: true
+    # number_sections: true
+---
+
+### 1. Data science cycle control cycle
+> 1.	ASK : What the problem(s) we need to solve ?
+> 2.	RESEARCH : What data do we need and how do we get it ?
+> 3.	MODEL : Which method(s) is appropriate to use ?
+> 4.	VALIDATE : Do the model and assumptions work as expected ?
+> 5.	TEST : How does the model generalize to real world data ?
+> 6.	INTEPRETE : How can we use the conclusion in the real world ?
+
+As the data is already given, what we can do is following :
+
+* Descriptive analysis 
+    + Data preparation (wrangling data to right format)
+(na, missing values, outliers, data unit, normalization …)
+    + Visualization
+* Inference and (or) prediction statistics 
+    + Knowledge discovery inside data
+        + Data clusterings?
+        + Contribution of each variables toward budget ?
+        + Is there any pattern of buget allocation among the variables ?
+    + Prediction : Since the data is outdated, new data would be needed to validate the prediction. Hence we do not do prediction.
+* Modeling : Parameters or non-parameter ?
+
+> Can be non-parameter as we make no assumption about the functional form of predicted variables – in fact, we don’t even know the response 
+variables.)
+    Supervised or Unsupervised ? As we have no idea about the ‘groups’ or classes' of variables as in case of classification, we might opt to choose unsupervised method: PCA & Clustering
+    
+* Validation
+    + Collinearity (Correlation of variables (e.g. over time))
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+In this document we follow 4 steps :
+
+### 2. Descriptive Analysis 
+### 2.1 Importing necessary packages
+
+```{r warning = FALSE}
+require(c('magrittr','reshaped2', 'ggplot2', 'devtools', 
+          'Rcpp', 'dplyr', 'tidyr'))
+library(reshape2)
+library(magrittr)  # Package for pipeline %>%
+library(ggplot2)
+library(devtools)
+library(Rcpp)
+library(FactoMineR)
+
+# library(rCharts)
+# family="sans-serif"
+```
+
+### 2.2 Data structure
+Examine the contents of the CSV file.
+
+```{r warning = FALSE}
+Budget <- read.csv("Budget.txt", header=FALSE, stringsAsFactors=FALSE)
+colnames(Budget) = c("AN", "PVP", "AGR", "CMI", "TRA", "LOG", 
+                     "EDU", "ACS", "ANC", "DEF", "DET", "DIV")
+Budget
+```
+
+What is the format of the first line? What does it represent?
+The first line is a list of variable names (11, AN is for individual names).
+
+* AN : year
+* PVP : authorities
+* AGR : agriculture
+* CMI : trades and companies • TRA : work
+* LOG : accommodations
+* EDU : education
+* ACS : social action
+* ANC : veterans
+* DEF : defense
+* DET : debt refund
+* DIV : various
+
+What is the format of the following lines? What do they represent?
+The other lines are the observations (1872 : 1971); each observation is a list of percentage of the budget allocated to each service.
+
+### 2.3 Summary
+```{r}
+str(Budget)
+summary(Budget)
+```
+
+The difference between the mean and median (eg. CMI, LOG) indicates that there are a few cases/rows with extreme values that are elevating the mean
+
+### 2.4 Box Plot
+Distribution, location and spread of the represented data.
+```{r}
+boxplot(Budget[,-1], ylab = 'Percentage of France Budget', xlab = 'Budget Category')
+```
+
+In the above plot, the share of all spending categories is mostly well bellow 20%, while for defense (DEF) and dept refund (DET), it is higher (showing war time and high governmental spending).
+The box is much higher for DEF and DET than for the others. This means that DEF and DET have larger variability than the others.
+The three largest observations in education (EDU) are shown as boxplot outliers, i.e. they are more than 1.5 times the inter-quartile range (hight of the box) larger than the 3rd quartile.
+
+### 2.5 Histograms
+Here we consider each variable separately. We consider the histograms as a probability density rather than a frequency. We fit empirical kernel density estimator curves, which give a more-or less smoothed continuous approximation to the histogram.
+What evidence does the summary give that the distribution is somewhat symmetric?
+We can observe the following:
+
+* Unimodal
+    + Skewed left : AGR, TRA, LOG, EDU, ANC, CMI
+    + Symetric : PVP, DEF 
+* Bimodal : DET, DIV
+```{r}
+par(mfrow=c(3,4),family ='sans')
+for (i in 2:length(names(Budget))){
+  hist((Budget)[,i],main=names(Budget)[i],prob=TRUE,xlab='% of the total Budget')
+  lines(density(Budget[,i]), col="red")
+}
+```
+
+### 2.6 Q-Q Plot
+```{r}
+c_d<-names(Budget)
+par(mfrow=c(3,4),family ='sans')
+for (i in 2:length(names(Budget))){
+  qqnorm((Budget)[,i], main=paste(c_d[i],'\n', 'vs','\n', 'Normal dist.'), ylab = c_d[i])
+  qqline((Budget)[,i], col= "green")
+}
+```
+
+#### 2.6 Heat Map
+A heat map is like a table that uses colors instead of numbers to represent the values for the cells, using Pearson Correlation
+```{r}
+data(attitude)
+head(attitude)
+head(Budget[,-1])
+library(ggplot2)
+library(reshape2)
+qplot(x=Var1, y=Var2, data=melt(cor(Budget[,-1], method = 'pearson')), fill=-value, geom="tile")
+```
+From the heatmap table, the correlation between variables is noticeable for ACS (Social action) & AGR (Agriculture), and ACS & EDU (Education)
+
+### 2.7 Evolution overtime
+```{r}
+par(mfrow = c(3,4))
+for (i in 2:(ncol(Budget))) {
+    tb = ts(Budget[,i])
+    plot(tb, ylab = colnames(Budget[i]))
+}
+```
+With only simple chart in time series, we can see the upward trend for
+Education (EDU) and Social Action (ACS) spending (as percentage of budget) over time, even during the economics slow down 1929 - 1932 and the 2 world wars
+
+### 3. Inference statistics
+
+### 4. Modeling 
+### 4.1 PCA
+A principal component analysis of the data can be applied using the *ACP* function of the *FactoMineR library* (omitting the AN variable).
+**Step 1**: We examine the eigenvalues to determine how many principal components should be considered:
+```{r}
+budget = PCA(Budget[,-1], ncp = 2, graph = FALSE)
+summary(budget)
+```
+
+If we take all of these eigenvalues and add them up we get the total variance of 11. The proportion of variation explained by each eigenvalue is given in the third column. For example, 4.972362e+00 divided by the 11 equals 0.4520329, or, about 45% of the variation is explained by this first eigenvalue. The cumulative percentage explained is obtained by adding the successive proportions of variation explained to obtain the running total. Therefore, about 64% of the variation is explained by the first two eigenvalues together.
+The first four principal components explain 85% of the variation. This is an acceptably large percentage.
+A Scree Plot may serve as another indicator of how many eigenvalues to consider. With the eigenvalues ordered from largest to the smallest, a scree plot is the plot of λi versus i. The number of component is determined at the point, beyond which the remaining eigenvalues are all relatively small and of comparable size.
+
+```{r}
+plot(budget[[1]]$`cumulative percentage of variance`, type = 'b', 
+     ylab = 'Variances', xlab = "Number of Components")
+```
+### How many components?
+
+* Kaiser criterion: 3 components 
+    + Greater than 80%: 4 components
+    + Greater than 90%: 5 components
+
+**Step 2**: To interpret each component, we must compute the correlations between the original data for each variable and each principal component.
+
+```{r}
+plot(budget, choix='var', title='PCA graph: Variances', axes=c(1:2))
+```
+
+The function dimdesc() allows to see which variables the axes are the most linked to: which variables are the most correlated to each axis (here a correlation value above 0.5 is deemed important).
+
+First Principal Component Analysis - Dim1
+
+```{r}
+dimdesc(budget, axes = 1)
+```
+
+    The first principal component is strongly correlated with 8 of the original variables. The first principal component increases with increasing ACS, CMI, AGR, EDU and LOG scores and with decreasing DIV, DEF and DET. This suggests that the five first criteria vary together. Furthermore, we see that the first principal component correlates most strongly with the ACS.
+    
+Second Principal Component Analysis - Dim2
+
+```{r}
+dimdesc(budget, axes = 2)
+```
+   
+    The second principal component increases with increasing PVP and TRA and with decreasing ANC.
+
+```{r}
+plot(budget, choix='ind', title='PCA graph: Individuals', axes=c(1:2))
+```
+
+    We may conclude that : 1968, 1971, 1956, 1962, 1965 and 1959 have a very high value for the first principal component and we would expect these years to have high values for the ACS, CMI, AGR, EDU and LOG and low values for DIV, DEF and DET.
+    Whereas if you look at 1872, 1880, 1890, 1920, 1903, 1906, 1900, 1909 we would expect to have high values for DIV, DEF and DET and low values for ACS, CMI, AGR, EDU and LOG.
+    1923, 1926, 1935, 1932, 1929 have a low value for the second component. So we would expect that these years to have low values for PVP and TRA. And conversely if you were to look at 1947 and 1950, these years would have high values for PVP and TRA.
+    
+### 4.2 Clustering
+```{r}
+km5=kmeans(Budget[,-1],4,nstart=50)
+km4=kmeans(Budget[,-1],4,nstart=50)
+km3=kmeans(Budget[,-1],3,nstart=50)
+km2=kmeans(Budget[,-1],2,nstart=50)
+
+par(mfrow = c(2,2))
+plot(Budget[,1], km2$cluster, xlab = 'Year', ylab = '2 Clusters')
+plot(Budget[,1], km3$cluster, xlab = 'Year', ylab = '3 Clusters')
+plot(Budget[,1], km4$cluster, xlab = 'Year', ylab = '4 Clusters')
+plot(Budget[,1], km5$cluster, xlab = 'Year', ylab = '5 Clusters')
+```
+
+### 4.3 Hierachiacal Clustering
+```{r}
+
+# Create a matrix with sd of each variables
+N<-matrix(rep(apply(Budget[,-1],2,sd),24), nrow=24)
+head(N)
+
+# Adjusted for sd with 1/n
+N<- (24-1)/23*(1/N)
+
+# Create a matrix with mean of each variables
+M<-matrix(rep(apply(Budget[,-1],2,mean),24),nrow=24)
+
+# Centered data
+Mprime<-Budget[,-1]-M
+
+# Normalized
+M_n<-Mprime*N
+
+# Hierarchical ascending clustering 
+my_H_clust<-hclust(dist(M_n), method ="ward.D2")
+my_H_clust1 = hclust(dist(M_n), method='complete')
+```
+
+```{r}
+# Plot data
+my_H_clust
+par(mfrow=c(1,1))
+plot(my_H_clust, labels = Budget[,1])
+plot(my_H_clust1, labels = Budget[,1])
+```
+

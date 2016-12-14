@@ -15,6 +15,9 @@ install.packages("dplyr")
 install.packages("tidyr")
 library(dplyr)
 library(tidyr)
+library(rmarkdown)
+library(knitr)
+library(shiny)
 
 #### Load the data set ####
 Budget <- read.csv("Budget.txt", header=FALSE, stringsAsFactors=FALSE)
@@ -118,13 +121,15 @@ ggplot(data=data.frame(cormat),
 #Budget
 
 #### Time Series Analysis ####
-Budget[,2]
+Budget[,-1]
 par(mfrow = c(3,4))
-for (i in 2:(ncol(Budget))) {
+for (i in 2:(ncol(Budget[-1]))) {
     tb = ts(Budget[,i])
-    plot(tb)
+    plot(tb, colnames(Budget[i]))
 }
 # Note: Upward trend in EDU (Education)  & ACS (Social Action) overtime
+head(Budget)
+
 
 # Create a matrix with sd of each variables
 N<-matrix(rep(apply(Budget[,-1],2,sd),24), nrow=24)
@@ -190,10 +195,23 @@ abline(h = 0.8,col='red')
 message("3 values have been replaced")
 
 #### K-Means ####
-km=kmeans(Budget[,-1],3,nstart=50)
-Budget[,-1]
+km5=kmeans(Budget[,-1],4,nstart=50)
+km4=kmeans(Budget[,-1],4,nstart=50)
+km3=kmeans(Budget[,-1],3,nstart=50)
+km2=kmeans(Budget[,-1],2,nstart=50)
+
+par(mfrow = c(2,2))
+plot(Budget[,1], km2$cluster, xlab = 'Year', ylab = '2 Clusters')
+plot(Budget[,1], km3$cluster, xlab = 'Year', ylab = '3 Clusters')
+plot(Budget[,1], km4$cluster, xlab = 'Year', ylab = '4 Clusters')
+plot(Budget[,1], km5$cluster, xlab = 'Year', ylab = '5 Clusters')
+
+names(km)
+cluster=km[[1]]
+rownames(Budget)
+plot(cbind(Budget[,1], cluster))
 class(km$cluster)
-plot(Budget[,1],km$cluster)
+
 names(km)
 plot(Budget[,-1], col=(km$cluster+1), 
      main="K-Means Clustering Results with K=3", 

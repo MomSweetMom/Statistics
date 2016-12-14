@@ -203,6 +203,10 @@ res = PCA(olympic[,1:10])
 summary(res)
 
 budget = PCA(Budget[,-1])
+names(budget)
+plot(budget[[1]]$`cumulative percentage of variance`, type = 'b', 
+     ylab = 'Variances', xlab = "Number of Components")
+plot(budget)
 summary(budget)
 screeplot(budget2,type='lines',col=3)
 summary(PCA)
@@ -210,10 +214,10 @@ budget2 = princomp(Budget[,-1], cor = TRUE)
 biplot(budget2)
 # PCA with supplementary variables
 res = PCA(olympic, quanti.sup=11) # quanli.sup
-summary(res,nbelements=Inf)
+summary(res, nbelements=Inf)
 
 # Description of the dimentions
-dimdesc(res)
+dimdesc(budget)
 dimdesc(res, proba=0.2)
 
 # Drawing individuals according to the competition

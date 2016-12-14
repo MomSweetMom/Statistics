@@ -1,6 +1,7 @@
 ---
 title: "Analysis of Budget dataset"
 output: html_document
+runtime: shiny
 ---
 
 In this document we follow 4 steps :
@@ -62,7 +63,7 @@ summary(lm(AN~.,Budget))
 
 #Budget 
 
-```{r}
+```{r eval = FALSE}
 View(Budget)
 long_data <- Budget %>% gather(Type, Allocation, -AN)
 View(long_data)
@@ -98,7 +99,13 @@ for (i in 2:length(names(Budget))){
 
 ```{r}
 cormat<-round(cor(Budget),2)
+# Convert an object into a molten dataframe
 cormat<-melt(cormat)
+
+data(attitude)
+library(ggplot2)
+library(reshape2)
+qplot(x=Var1, y=Var2, data=melt(cor(attitude)), fill=value, geom="tile")
 
 ggplot(data=data.frame(cormat),
        aes(fill=value,x=X1, y=X2)) +
