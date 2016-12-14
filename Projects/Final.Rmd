@@ -160,6 +160,7 @@ for (i in 2:(ncol(Budget))) {
     plot(tb, ylab = colnames(Budget[i]))
 }
 ```
+
 With only simple chart in time series, we can see the upward trend for
 Education (EDU) and Social Action (ACS) spending (as percentage of budget) over time, even during the economics slow down 1929 - 1932 and the 2 world wars
 
@@ -168,6 +169,7 @@ Education (EDU) and Social Action (ACS) spending (as percentage of budget) over 
 ### 4. Modeling 
 ### 4.1 PCA
 A principal component analysis of the data can be applied using the *ACP* function of the *FactoMineR library* (omitting the AN variable).
+
 **Step 1**: We examine the eigenvalues to determine how many principal components should be considered:
 ```{r}
 budget = PCA(Budget[,-1], ncp = 2, graph = FALSE)
@@ -175,14 +177,17 @@ summary(budget)
 ```
 
 If we take all of these eigenvalues and add them up we get the total variance of 11. The proportion of variation explained by each eigenvalue is given in the third column. For example, 4.972362e+00 divided by the 11 equals 0.4520329, or, about 45% of the variation is explained by this first eigenvalue. The cumulative percentage explained is obtained by adding the successive proportions of variation explained to obtain the running total. Therefore, about 64% of the variation is explained by the first two eigenvalues together.
+
 The first four principal components explain 85% of the variation. This is an acceptably large percentage.
+
 A Scree Plot may serve as another indicator of how many eigenvalues to consider. With the eigenvalues ordered from largest to the smallest, a scree plot is the plot of λi versus i. The number of component is determined at the point, beyond which the remaining eigenvalues are all relatively small and of comparable size.
 
 ```{r}
 plot(budget[[1]]$`cumulative percentage of variance`, type = 'b', 
      ylab = 'Variances', xlab = "Number of Components")
 ```
-### How many components?
+
+**How many components?**
 
 * Kaiser criterion: 3 components 
     + Greater than 80%: 4 components
@@ -219,6 +224,22 @@ plot(budget, choix='ind', title='PCA graph: Individuals', axes=c(1:2))
     We may conclude that : 1968, 1971, 1956, 1962, 1965 and 1959 have a very high value for the first principal component and we would expect these years to have high values for the ACS, CMI, AGR, EDU and LOG and low values for DIV, DEF and DET.
     Whereas if you look at 1872, 1880, 1890, 1920, 1903, 1906, 1900, 1909 we would expect to have high values for DIV, DEF and DET and low values for ACS, CMI, AGR, EDU and LOG.
     1923, 1926, 1935, 1932, 1929 have a low value for the second component. So we would expect that these years to have low values for PVP and TRA. And conversely if you were to look at 1947 and 1950, these years would have high values for PVP and TRA.
+    
+**2 component solution**
+
+* Component 1: (eg 1872 and 1968) 
+    + Education
+    + Social action
+* Component 2: (eg 1923 and 1947)
+    + Authorities
+    + Work
+    + Trades and companies
+
+*Is 3rd component useful or not?* It seems not very useful as we look at the following plot
+
+```{r}
+plot(budget, choix='ind', title='PCA graph: Individuals', axes=c(1,3))
+```
     
 ### 4.2 Clustering
 ```{r}
