@@ -4,7 +4,7 @@
 #to know the path of the current work directory
 
 setwd('C:/Users/christine/desktop')  #the path is adapted to my own computer
-getwd()
+setwd(getwd())
 
 #to load data into the R console one usefull command is read.table
 
@@ -32,6 +32,7 @@ A5=read.table('data5.txt')
 #the good import is obtained by
 
 A5=read.table('data5.txt',header=TRUE)
+A5[,1]
 
 #so this is not because all seems to be good that we obtain the good object!
 
