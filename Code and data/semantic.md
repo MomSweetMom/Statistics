@@ -3,10 +3,10 @@ trung.hoang-tran@edu.dsti.institute
 
 ### Q1. 
 <book>
-**<title>**Architecture Now</title>
-<author>Jodidio, Philip**</author>**
-<ID isbn10=“3822840912” **/**>
-**</book>**
+<title>Architecture Now</title>
+<author>Jodidio, Philip</author>
+<ID isbn10=“3822840912”/>
+</book>
 
 ### Q1.2
 view-source: http://www.bbc.co.uk/nature/life/Great_white_shark
