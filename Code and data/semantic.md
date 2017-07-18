@@ -238,19 +238,46 @@ Describe a graph algebra with doc.html, whose subject is in an URI
 7	<http://www.inria.fr/2015/humans-instances#William>
 8	<http://www.inria.fr/2015/humans-instances#Karl>
 ```
+### Q3.2
+```
+x	p	v
+:Paris [http]	rdf:type [http]	owl:Thing [http]
+:Paris [http]	rdf:type [http]	dbpedia:ontology/Place [http]
+:Paris [http]	rdf:type [http]	dbpedia:ontology/Location [http]
+:Paris [http]	rdf:type [http]	<http://www.wikidata.org/entity/Q486972> [http]
+:Paris [http]	rdf:type [http]	dbpedia:ontology/PopulatedPlace [http]
+:Paris [http]	rdf:type [http]	dbpedia:ontology/Settlement [http]
+:Paris [http]	rdf:type [http]	<http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing> [http]
+:Paris [http]	rdf:type [http]	<http://schema.org/Place> [http]
+:Paris [http]	rdf:type [http]	<http://umbel.org/umbel/rc/Location_Underspecified> [http]
+:Paris [http]	rdf:type [http]	<http://umbel.org/umbel/rc/PopulatedPlace> 
+```
 ### Q3.3
+All American Presidents
+```
+SELECT ?president ?name WHERE
+{ wd:Q30 p:P6/ps:P6 ?president . 
+ ?president p:P734 ?pLabel . 
+ ?pLabel ?x ?v .
+ ?v rdfs:label ?name .
+ FILTER (lang(?name)="en")  
+}
+```
+
 
 ### Q3.4
+```
 select * where 
 { ?x  a loaf:Person}
 limit 20
-
+```
 ### Q3.5 
+```
 select * where
 { ?x a foaf:Person}
 limit 20
 offset 10
-
+```
 ### Q3.6
 1. select ?age 
 where {
@@ -263,7 +290,7 @@ where {
 	c:age ?age .
 	filter(?age < 50)
 }
-1. select ?p ?y 
+3. select ?p ?y 
 where {
 	?x c:name “Fabien”; 
 	c:age ?age;
@@ -291,30 +318,33 @@ where {
 
 ### Q3.7
 The ‘minus’ will do nothing so the query return everything satisfy
+```
 select * 
 where {
 	?x c:memberOf ?org
 }
-
+```
 ### Q3.8 
+```
 select ?mem
 where {
 	?mem c:memberOf ?org .
 	filter ({! exist
 		?mem c:author ?doc})
 }
-
+```
 ### Q3.9
 Meaning: Counting the number of documents produced by each authors 
 in descending order
 
 1. Practice
+```
 select (Count(distinct ?x) as ?number)
 where {
 	?x c:memberOf ?org .
 	minus {?x ex:author ?doc}
 } 
-
+```
 ### Q3.10
 ?x (foam:knows | refs:see Also)+ ?y
 
@@ -327,6 +357,7 @@ Return person and average age of the ones they know
 
 ### Q3.13
 1. Study informatics or mathematics
+```
 select * 
 where {
 	?x c:study ?subject
@@ -346,12 +377,13 @@ where {
 	{?x c:study c:informatics}
 	optional {graph ?g {?x c:name ?name}}
 } 
-
+```
 ### Q3.15
+```
 DELETE {?x foam:name ?n}
 INSERT {?x rdfs:label ?n}
 WHERE {?x foaf:name ?n}
-
+```
 ### Q3.16
 Replace the age of type “string” with “integer”
 
