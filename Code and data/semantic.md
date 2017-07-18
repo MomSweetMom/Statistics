@@ -228,8 +228,7 @@ Describe a graph algebra with doc.html, whose subject is in an URI
 - - - -
 
 ### Q3.1
-
-x
+```
 1	<http://www.inria.fr/2015/humans-instances#John>
 2	<http://www.inria.fr/2015/humans-instances#Sophie>
 3	<http://www.inria.fr/2015/humans-instances#Mark>
@@ -238,7 +237,7 @@ x
 6	<http://www.inria.fr/2015/humans-instances#Laura>
 7	<http://www.inria.fr/2015/humans-instances#William>
 8	<http://www.inria.fr/2015/humans-instances#Karl>
-
+```
 ### Q3.3
 
 ### Q3.4
