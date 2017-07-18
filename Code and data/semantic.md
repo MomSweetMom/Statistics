@@ -190,7 +190,7 @@ Five Rules of Linked Open data
 - - - -
 
 ### Q2.1
-1. Image
+It's too long ago and I can't find the Image link anymore
 
 ### Q2.2
 AAA = rdf:Description
