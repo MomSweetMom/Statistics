@@ -279,6 +279,7 @@ limit 20
 offset 10
 ```
 ### Q3.6
+```
 1. select ?age 
 where {
 	?x c:name ‘Fabien’;
@@ -315,7 +316,7 @@ where {
 	?z .
 	filter(?v != ?z)
 }
-
+```
 ### Q3.7
 The ‘minus’ will do nothing so the query return everything satisfy
 ```
@@ -346,8 +347,9 @@ where {
 } 
 ```
 ### Q3.10
+```
 ?x (foam:knows | refs:see Also)+ ?y
-
+```
 ### Q3.11
 Return person and names of the ones they know or return “John Doe” if that ones
 don’t have name
@@ -406,14 +408,16 @@ P4 rdfs:subPropertyOf P2, P3
 - - - -
 
 ### Q5.1
+```
 ex:Jane a ex:Woman
 ex:John a ex:Male, Human
 ex:James a ex:Male
-
+```
 ### Q5.2
+```
 ex:Jim a ex:GrandFather
 ex:Jim a ex:Parent ex:Man
-
+```
 ### Q5.3
 Jim has a child named Jane | Jane has a ‘parent’ named Jim
 Jane is a wife of John | John is a husband of Jane
