@@ -44,7 +44,7 @@ Budget = na.omit(Budget)
 # Check the variables names
 names(Budget)
 par(mfrow=c(1,1))
-boxplot(Budget[,-1])
+boxplot(Budget[,-1], xlab ="Budget Category", ylab = "Percentage of the France Budget")
 # Attach the observations Frame
 attach(Budget)
 
